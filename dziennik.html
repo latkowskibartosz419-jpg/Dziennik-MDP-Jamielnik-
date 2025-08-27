@@ -80,7 +80,9 @@ for(let i=0; i<maxPeople; i++){
   const input = document.createElement('input');
   input.className = 'name';
   input.placeholder = 'Imię i Nazwisko';
-  if(storedData[i]) input.value = storedData[i].name;
+  
+  // Wczytaj dane jeśli są zapisane
+  if(storedData[i] && storedData[i].name) input.value = storedData[i].name;
   nameCell.appendChild(input);
 
   input.addEventListener('input', () => { saveData(); });
@@ -89,27 +91,26 @@ for(let i=0; i<maxPeople; i++){
   percentCell.textContent = '0%';
 
   // Wczytanie zapisanych obecności
-  if(storedData[i] && storedData[i].attendance){
-    storedData[i].attendance.forEach(val => {
-      const cell = row.insertCell();
-      cell.textContent = val;
-      if(val==='O') cell.className='O';
-      else if(val==='N') cell.className='N';
-      cell.classList.add('clickable');
-      cell.addEventListener('click', () => {
-        if(!editMode) return;
-        if(cell.textContent === '' || cell.textContent === 'N'){
-          cell.textContent = 'O';
-          cell.className = 'O clickable';
-        } else {
-          cell.textContent = 'N';
-          cell.className = 'N clickable';
-        }
-        updateAttendance(row);
-        saveData();
-      });
+  const attendanceLength = storedData[i] && storedData[i].attendance ? storedData[i].attendance.length : 0;
+  for(let j=0; j<attendanceLength; j++){
+    const cell = row.insertCell();
+    const val = storedData[i].attendance[j];
+    cell.textContent = val;
+    if(val==='O') cell.className='O clickable';
+    else if(val==='N') cell.className='N clickable';
+    else cell.classList.add('clickable');
+    cell.addEventListener('click', () => {
+      if(!editMode) return;
+      if(cell.textContent === '' || cell.textContent === 'N'){
+        cell.textContent = 'O';
+        cell.className = 'O clickable';
+      } else {
+        cell.textContent = 'N';
+        cell.className = 'N clickable';
+      }
+      updateAttendance(row);
+      saveData();
     });
-    updateAttendance(row);
   }
 }
 
